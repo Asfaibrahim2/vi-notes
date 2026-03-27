@@ -1,129 +1,133 @@
 # Vi-Notes
 
-**Vi-Notes** is an authenticity verification platform designed to distinguish genuine human-written content from AI-generated or AI-assisted text. The system focuses on analyzing **writing behavior** alongside **statistical and linguistic characteristics** of the text to establish reliable authorship verification.
+Vi-Notes is a MERN-based authenticity verification prototype focused on **writing behavior signals**, not content storage.
 
-This repository represents the **design and conceptual foundation** for the Vi-Notes system.
+This submission implements the requested 1-2 features end-to-end:
+- Keystroke timing capture during typing
+- Paste detection with pasted length tracking
 
----
+## Implemented Features
 
-## Motivation
+### 1) Keystroke Timing Metadata
+While the user types in the editor, the app captures:
+- `interKeyMs`: time gap between consecutive key presses
+- `holdMs`: key press to key release duration
 
-With the widespread availability of AI writing tools, verifying true human authorship has become increasingly challenging. Most existing detection methods rely primarily on textual analysis, which can be inconsistent and easy to bypass.
+### 2) Paste Detection Metadata
+When user pastes into the editor, the app captures:
+- `pasteLength`: number of characters pasted
 
-Vi-Notes approaches this problem by combining:
-- Behavioral signals from the writing process
-- Statistical analysis of the written content
-- Correlation between how content is written and what is written
+### Live UI Visibility
+The editor includes a **Live Activity** section showing:
+- total event count
+- keystroke timing event count
+- paste event count
+- latest event log (timing/paste only)
 
----
+## Privacy-First Rules
 
-## Core Idea
+This project intentionally does **not** store:
+- typed characters
+- pasted text
+- clipboard content
 
-Human writing naturally includes:
-- Variable typing speeds
-- Pauses during thinking
-- Revisions during idea formation
-- Irregular sentence structures
-- A relationship between content complexity and editing frequency
+Only behavioral metadata is stored (timestamps, timing values, paste length).
 
-AI-generated or pasted text often lacks these behavioral signatures.
+## Tech Stack
 
-Vi-Notes is designed to capture and analyze these characteristics to assess authorship authenticity.
+- Frontend: React (CRA)
+- Backend: Node.js + Express
+- Database: MongoDB + Mongoose
 
----
+## Project Structure
 
-## Key Features
+- `frontend/` - React editor UI and telemetry event sender
+- `backend/` - Express API, Mongoose models, MongoDB persistence
 
-### Writing Session Monitoring
-- Capture keystroke timing metadata (not raw key content)
-- Track pauses, deletions, edits, and writing flow
-- Detect pasted or externally inserted text blocks
+## API Endpoints
 
-### Behavioral Pattern Analysis
-- Pause distribution before sentences and paragraphs
-- Typing speed variance
-- Revision frequency relative to text complexity
-- Micro-pauses around punctuation and structural boundaries
+- `POST /api/sessions`  
+  Create/reuse a writing session
+- `POST /api/sessions/:sessionId/events`  
+  Send one event at a time (`key` or `paste`)
+- `POST /api/sessions/:sessionId/end`  
+  Mark session as ended
+- `GET /api/sessions/:sessionId`  
+  Session summary and counts
+- `GET /api/sessions/:sessionId/events?limit=200`  
+  Read recent stored metadata events
 
-### Textual Statistical Analysis
-- Sentence length variation
-- Vocabulary diversity metrics
-- Stylistic consistency analysis
-- Linguistic irregularities typical of human writing
+## Sample Event Payloads
 
-### Cross-Verification Engine
-- Correlate keyboard behavior with text evolution
-- Identify mismatches between behavioral data and content
-- Flag suspicious uniformity patterns
+Keystroke keydown event:
+```json
+{
+  "type": "key",
+  "phase": "down",
+  "ts": 1710000000000,
+  "interKeyMs": 143,
+  "isRepeat": false
+}
+```
 
-### Authenticity Reports
-- Confidence score for human authorship
-- Highlighted suspicious segments
-- Supporting behavioral and textual indicators
-- Shareable verification summaries
+Keystroke keyup event:
+```json
+{
+  "type": "key",
+  "phase": "up",
+  "ts": 1710000000108,
+  "holdMs": 91,
+  "isRepeat": false
+}
+```
 
----
+Paste event:
+```json
+{
+  "type": "paste",
+  "ts": 1710000000200,
+  "pasteLength": 54
+}
+```
 
-## Tech Stack (MERN Architecture)
+## Run Locally
 
-### Frontend
-- React
-- TypeScript
-- Electron for desktop-level keyboard event access
+1. Start MongoDB (local or Atlas URI).
 
-### Backend
-- Node.js
-- Express.js
-- RESTful APIs for session handling and analysis
+2. Start backend:
+```bash
+cd backend
+npm install
+npm run dev
+```
 
-### Database
-- MongoDB
-- Encrypted storage for writing sessions, keystroke metadata, and reports
+3. Start frontend:
+```bash
+cd frontend
+npm install
+npm start
+```
 
-### Machine Learning
-- TensorFlow / PyTorch
-- Supervised learning for human vs AI-assisted writing
-- Unsupervised anomaly detection
-- NLP-based statistical signature analysis
+4. Open:
+- Frontend: `http://localhost:3000`
+- Backend health: `http://localhost:5000/health`
 
----
+## Quick Verification
 
-## Privacy & Ethics
+1. Type in editor and observe Live Activity updates.
+2. Paste text and confirm paste detection + character length is shown.
+3. Check stored events with:
+   - `GET /api/sessions/:sessionId/events`
+4. Confirm no text fields are stored, only timing/length metadata.
 
-Vi-Notes is designed with privacy-first principles:
+## Viva / Demo Script (1 minute)
 
-- No storage of raw keystroke content
-- Only timing, frequency, and structural metadata is collected
-- Encrypted data storage
-- User-controlled session tracking
-- Monitoring limited strictly to active writing sessions
-
----
-
-## Project Goals
-
-- Restore trust in written content authenticity
-- Differentiate between human-written, AI-assisted, and AI-generated text
-- Adapt detection methods as AI writing tools evolve
-- Maintain ethical, transparent, and privacy-conscious verification
-
----
-
-## Repository Scope
-
-This repository currently serves as:
-- A design reference
-- A research and experimentation space
-- A foundation for future MERN-based implementation
-
----
-
-## Contributing
-
-Contributions are welcome, especially for **feature requests and their implementation**.  
-If you are interested in working on an existing feature request or proposing a new one, please open or comment on an issue to start the discussion.
-
----
+"In this Vi-Notes prototype, I implemented two behavioral authenticity features.  
+First, while the user types, I record only timing metadata: inter-key delay and key hold duration.  
+Second, when a paste occurs, I record only that a paste happened and how many characters were pasted.  
+No typed or pasted content is stored anywhere.  
+These events are sent in real time from React to Express and saved in MongoDB for later behavioral analysis.  
+The Live Activity panel proves detections instantly to the user."
 
 ## License
 
