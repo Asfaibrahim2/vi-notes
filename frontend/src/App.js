@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
+const API_BASE = process.env.REACT_APP_API_URL || "";
+
 function App() {
   const textareaRef = useRef(null);
 
@@ -24,7 +26,7 @@ function App() {
     if (sessionPromiseRef.current) return sessionPromiseRef.current;
 
     sessionPromiseRef.current = (async () => {
-      const resp = await fetch("https://vi-notes-8a36.onrender.com/api/sessions", {
+      const resp = await fetch(`${API_BASE}/api/sessions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ clientSessionId }),
@@ -42,7 +44,7 @@ function App() {
     try {
       const activeSessionId = await ensureSession();
       // Fire-and-forget, but still awaited here so we can attach a minimal catch.
-      await fetch(`https://vi-notes-8a36.onrender.com/api/sessions/${activeSessionId}/events`, {
+      await fetch(`${API_BASE}/api/sessions/${activeSessionId}/events`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

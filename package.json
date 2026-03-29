@@ -1,0 +1,11 @@
+{
+  "name": "vi-notes",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "build": "npm run build -w frontend"
+  }
+}

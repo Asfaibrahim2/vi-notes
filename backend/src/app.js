@@ -2,7 +2,9 @@ const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 const morgan = require("morgan");
+const mongoose = require("mongoose");
 
+const { connectMongo } = require("./db/mongoose");
 const sessionsRouter = require("./routes/sessions");
 
 const app = express();
@@ -24,6 +26,17 @@ app.use(morgan("dev"));
 
 app.get("/health", (req, res) => {
   res.json({ ok: true });
+});
+
+app.use(async (req, res, next) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      await connectMongo();
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.use("/api", sessionsRouter);
