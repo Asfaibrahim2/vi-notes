@@ -60,7 +60,7 @@ function App() {
 
   useEffect(() => {
     // Pre-create the session so initial key presses aren't dropped.
-    ensureSession().catch(() => {});
+    ensureSession().catch(() => { });
     return () => {
       // Allow GC to clean up in-flight promises; no special teardown required.
     };
@@ -73,7 +73,6 @@ function App() {
     const interKeyMs = lastDown == null ? null : ts - lastDown;
     lastKeyDownTsRef.current = ts;
 
-    // No key/character content is sent.
     setEventCount((v) => v + 1);
     setKeyTimingCount((v) => v + 1);
     pushRecentEvent(
@@ -110,7 +109,6 @@ function App() {
   };
 
   const handlePaste = (e) => {
-    // Read clipboard *only* to measure length. Do not store clipboard text.
     const pastedText = e.clipboardData?.getData("text") ?? "";
     const pasteLength = pastedText.length;
     const ts = Date.now();
@@ -142,9 +140,26 @@ function App() {
       <div style={{ marginTop: 10, fontSize: 13 }}>
         <strong>Live Activity</strong>
       </div>
-      <div style={{ marginTop: 6, fontSize: 12 }}>
-        Total events: {eventCount} | Keystroke timing events: {keyTimingCount} | Paste events: {pasteCount}
+            <div style={{ display: "flex", gap: "10px", marginTop: "15px", marginBottom: "15px", maxWidth: "580px" }}>
+        {/* Card 1: Total Events */}
+        <div style={{ flex: 1, padding: "12px", background: "#f8f9fa", border: "1px solid #ddd", borderRadius: "8px", textAlign: "center" }}>
+          <div style={{ fontSize: "11px", fontWeight: "bold", textTransform: "uppercase", color: "#666" }}>Total Events</div>
+          <div style={{ fontSize: "24px", fontWeight: "bold", color: "#333", marginTop: "4px" }}>{eventCount}</div>
+        </div>
+
+        {/* Card 2: Keystroke Timings */}
+        <div style={{ flex: 1, padding: "12px", background: "#f8f9fa", border: "1px solid #ddd", borderRadius: "8px", textAlign: "center" }}>
+          <div style={{ fontSize: "11px", fontWeight: "bold", textTransform: "uppercase", color: "#666" }}>Keystrokes</div>
+          <div style={{ fontSize: "24px", fontWeight: "bold", color: "#007bff", marginTop: "4px" }}>{keyTimingCount}</div>
+        </div>
+
+        {/* Card 3: Paste Events (Turns Red if Paste > 0) */}
+        <div style={{ flex: 1, padding: "12px", background: pasteCount > 0 ? "#ffe8e8" : "#f8f9fa", border: "1px solid", borderColor: pasteCount > 0 ? "#ff4c4c" : "#ddd", borderRadius: "8px", textAlign: "center" }}>
+          <div style={{ fontSize: "11px", fontWeight: "bold", textTransform: "uppercase", color: pasteCount > 0 ? "#d90000" : "#666" }}>Paste Events</div>
+          <div style={{ fontSize: "24px", fontWeight: "bold", color: pasteCount > 0 ? "#d90000" : "#333", marginTop: "4px" }}>{pasteCount}</div>
+        </div>
       </div>
+
       <div style={{ marginTop: 6, fontSize: 12, color: pasteCount > 0 ? "#a83f00" : "#333" }}>
         {pasteCount > 0
           ? `Paste detected. Last pasted length: ${lastPasteLength} characters.`
@@ -153,14 +168,14 @@ function App() {
       <div
         style={{
           marginTop: 8,
-          border: "1px solid #ddd",
+          border: "1px solid #000000",
           borderRadius: 6,
           padding: 8,
           maxWidth: 560,
           minHeight: 110,
           fontFamily: "monospace",
           fontSize: 12,
-          background: "#fafafa",
+          background: "rgb(255, 255, 255)",
           overflow: "auto",
         }}
       >
