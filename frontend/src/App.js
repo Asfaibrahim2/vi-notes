@@ -24,7 +24,7 @@ function App() {
     if (sessionPromiseRef.current) return sessionPromiseRef.current;
 
     sessionPromiseRef.current = (async () => {
-      const resp = await fetch("/api/sessions", {
+      const resp = await fetch("https://vi-notes-8a36.onrender.com/api/sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ clientSessionId }),
@@ -42,7 +42,7 @@ function App() {
     try {
       const activeSessionId = await ensureSession();
       // Fire-and-forget, but still awaited here so we can attach a minimal catch.
-      await fetch(`/api/sessions/${activeSessionId}/events`, {
+      await fetch(`https://vi-notes-8a36.onrender.com/api/sessions/${activeSessionId}/events`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -140,7 +140,7 @@ function App() {
       <div style={{ marginTop: 10, fontSize: 13 }}>
         <strong>Live Activity</strong>
       </div>
-            <div style={{ display: "flex", gap: "10px", marginTop: "15px", marginBottom: "15px", maxWidth: "580px" }}>
+      <div style={{ display: "flex", gap: "10px", marginTop: "15px", marginBottom: "15px", maxWidth: "580px" }}>
         {/* Card 1: Total Events */}
         <div style={{ flex: 1, padding: "12px", background: "#f8f9fa", border: "1px solid #ddd", borderRadius: "8px", textAlign: "center" }}>
           <div style={{ fontSize: "11px", fontWeight: "bold", textTransform: "uppercase", color: "#666" }}>Total Events</div>
